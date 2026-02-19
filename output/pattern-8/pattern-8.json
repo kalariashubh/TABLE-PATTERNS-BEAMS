@@ -61,7 +61,6 @@
         "right": "ALL"
       },
       "reinforcement": [
-        "2-16T",
         "3-32T"
       ],
       "stirrups": {
@@ -110,14 +109,14 @@
         "right": "ALL"
       },
       "reinforcement": [
-        "3-32T"
+        "2-16T"
       ],
       "stirrups": {
         "dia": [
           "2L-8T"
         ],
         "spacing": [
-          "100 C/C"
+          "150 C/C"
         ]
       }
     },
@@ -189,7 +188,7 @@
           "4L-10T"
         ],
         "spacing": [
-          "150 C/C"
+          "100 C/C"
         ]
       }
     },
@@ -213,12 +212,12 @@
           "4L-10T"
         ],
         "spacing": [
-          "150 C/C"
+          "100 C/C"
         ]
       }
     },
     {
-      "beam_id": "CB2e",
+      "beam_id": "CB3a",
       "size": {
         "width": 300,
         "depth": 600,
@@ -242,28 +241,6 @@
       }
     },
     {
-      "beam_id": "CB3a",
-      "size": {
-        "width": 300,
-        "depth": 600,
-        "length": null
-      },
-      "nos": {
-        "left": "ALL",
-        "mid_span": "ALL",
-        "right": "ALL"
-      },
-      "reinforcement": [],
-      "stirrups": {
-        "dia": [
-          "2L-8T"
-        ],
-        "spacing": [
-          "100 C/C"
-        ]
-      }
-    },
-    {
       "beam_id": "CB3b",
       "size": {
         "width": 300,
@@ -275,7 +252,9 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [],
+      "reinforcement": [
+        "3-32T"
+      ],
       "stirrups": {
         "dia": [
           "2L-8T"
@@ -297,7 +276,9 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [],
+      "reinforcement": [
+        "3-25T"
+      ],
       "stirrups": {
         "dia": [
           "4L-10T"
@@ -319,7 +300,9 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [],
+      "reinforcement": [
+        "3-25T"
+      ],
       "stirrups": {
         "dia": [
           "2L-8T"
@@ -341,7 +324,9 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [],
+      "reinforcement": [
+        "3-25T"
+      ],
       "stirrups": {
         "dia": [
           "2L-8T"
@@ -364,12 +349,11 @@
         "right": "ALL"
       },
       "reinforcement": [
-        "3-25T",
-        "3-32T"
+        "6-32T"
       ],
       "stirrups": {
         "dia": [
-          "6L-10T"
+          "4L-10T"
         ],
         "spacing": [
           "100 C/C"
@@ -389,12 +373,11 @@
         "right": "ALL"
       },
       "reinforcement": [
-        "3-25T",
-        "3-32T"
+        "6-32T"
       ],
       "stirrups": {
         "dia": [
-          "6L-10T"
+          "4L-10T"
         ],
         "spacing": [
           "100 C/C"
@@ -413,12 +396,10 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [
-        "7-32T"
-      ],
+      "reinforcement": [],
       "stirrups": {
         "dia": [
-          "10L-10T"
+          "6L-10T"
         ],
         "spacing": [
           "100 C/C"
@@ -437,12 +418,10 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [
-        "7-32T"
-      ],
+      "reinforcement": [],
       "stirrups": {
         "dia": [
-          "10L-10T"
+          "6L-10T"
         ],
         "spacing": [
           "100 C/C"
@@ -546,7 +525,7 @@
       }
     },
     {
-      "beam_id": "CB6c",
+      "beam_id": "CB6e",
       "size": {
         "width": 300,
         "depth": 600,
@@ -605,12 +584,10 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [
-        "7-32T"
-      ],
+      "reinforcement": [],
       "stirrups": {
         "dia": [
-          "10L-10T"
+          "6L-10T"
         ],
         "spacing": [
           "100 C/C"
@@ -629,12 +606,10 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [
-        "7-32T"
-      ],
+      "reinforcement": [],
       "stirrups": {
         "dia": [
-          "10L-10T"
+          "6L-10T"
         ],
         "spacing": [
           "100 C/C"
@@ -653,12 +628,10 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [
-        "6-32T"
-      ],
+      "reinforcement": [],
       "stirrups": {
         "dia": [
-          "10L-10T"
+          "6L-10T"
         ],
         "spacing": [
           "100 C/C"
@@ -677,12 +650,10 @@
         "mid_span": "ALL",
         "right": "ALL"
       },
-      "reinforcement": [
-        "6-32T"
-      ],
+      "reinforcement": [],
       "stirrups": {
         "dia": [
-          "10L-10T"
+          "6L-10T"
         ],
         "spacing": [
           "100 C/C"
