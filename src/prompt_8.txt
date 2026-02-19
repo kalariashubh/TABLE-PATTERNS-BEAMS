@@ -53,7 +53,7 @@ REINFORCEMENT RULES
    - EX
 3. Remove TH and EX words entirely.
 4. If reinforcement like:
-   2-16T-1-12T TH
+   2-16T+1-12T TH
    Extract as:
    2-16T
    1-12T
@@ -110,15 +110,63 @@ LEGGED = 2
 STRP.DIA = 8T
 Output → 2L-8T
 
-2. SPACING:
-Extract numeric spacing from SPAC.c/c column.
-Convert:
-100 → 100 C/C
-150 → 150 C/C
+Do not assume any value if not clear.
 
-3. Do NOT include ALL or REST in spacing.
+2. SPACING (VERY STRICT COLUMN RULE)
 
-4. Do NOT merge stirrups across beams.
+SPACING belongs ONLY to the beam directly above that SPAC.c/c cell.
+
+CRITICAL:
+
+1. You must extract spacing ONLY from the vertical column directly above that beam_id.
+2. Do NOT read spacing values from adjacent beam columns.
+3. Do NOT scan the full SPAC.c/c row.
+4. Only consider numbers that lie strictly inside that beam’s column boundaries.
+
+If the spacing row contains:
+100   150   100
+
+You must:
+
+- Extract only numbers inside that beam’s vertical column.
+- Remove duplicates.
+- Ignore order.
+- Ignore repetition.
+- Ignore ALL or REST.
+
+Convert each numeric value to:
+<number> C/C
+
+Example:
+100   150   100
+→
+100 C/C
+150 C/C
+
+If only one number exists in that beam column:
+100
+→
+100 C/C
+
+If no numeric spacing exists in that beam column:
+spacing = []
+
+If the SPAC.c/c row shows:
+
+100   150
+
+And:
+
+CB1d column aligns with 100
+CB1e column aligns with 150
+
+Then:
+
+CB1d → ["100 C/C"]
+CB1e → ["150 C/C"]
+
+NOT BOTH.
+
 
 ========================================================
 GENERAL
@@ -129,3 +177,4 @@ GENERAL
 3. Do NOT guess.
 4. If missing → null or empty array.
 5. Extract only what belongs strictly to each beam.
+6. Do not write any wrong values in any column and also do not assume any values.
