@@ -13,6 +13,11 @@ Return output STRICTLY in the following JSON format:
         "depth": null,
         "length": null
       },
+      "nos": {
+        "left": null,
+        "mid_span": null,
+        "right": null
+      },
       "reinforcement": [],
       "stirrups": {
         "dia": [],
@@ -22,80 +27,105 @@ Return output STRICTLY in the following JSON format:
   ]
 }
 
-=========================
-CRITICAL EXTRACTION LOGIC (PATTERN-9)
-=========================
+========================================================
+CRITICAL EXTRACTION LOGIC
+========================================================
 
 THIS IS A STRIP BEAM DETAIL DRAWING.
 
-1. Each beam segment (e.g., CB1a, CB1b, CB1c, etc.) has its reinforcement written DIRECTLY ABOVE that segment.
-2. Reinforcement MUST be assigned ONLY to the beam directly below it.
-3. DO NOT mix reinforcement from adjacent segments.
-4. DO NOT merge reinforcement across beams.
-5. Do NOT assume reinforcement is common across the strip.
-6. Use strict vertical alignment logic.
+VERY IMPORTANT:
 
-=========================
+1. Reinforcement belongs ONLY to the beam directly below it.
+2. The reinforcement text must fall strictly within the horizontal boundaries of that beam.
+3. If NO reinforcement text exists directly above a beam, reinforcement must be an EMPTY ARRAY.
+4. Do NOT copy reinforcement from adjacent beams.
+5. Do NOT assume symmetry.
+6. Do NOT assume repetition.
+7. If nothing is written above that beam segment → reinforcement = [].
+
+========================================================
 REINFORCEMENT RULES
-=========================
+========================================================
 
-1. Extract reinforcement written above each beam segment.
-2. Ignore words:
+1. Extract reinforcement ONLY from the immediate vertical zone above that beam.
+2. Ignore completely:
    - TH
    - EX
-3. Keep format exactly as written:
-   Example:
+3. Remove TH and EX words entirely.
+4. If reinforcement like:
+   2-16T-1-12T TH
+   Extract as:
+   2-16T
+   1-12T
+5. Keep exact format:
    3-32T
    2-16T
-   7-32T
-4. If multiple reinforcements are written above the same segment, include all.
-5. Remove duplicates.
-6. DO NOT convert format to quantity-Tdiameter.
-7. Do NOT rearrange numbers.
+   1-12T
+6. Remove duplicates.
+7. Do NOT merge across beams.
+8. If no reinforcement text visible above beam → return [].
 
-=========================
+========================================================
+NOS RULES
+========================================================
+
+NOS values appear in three vertical columns:
+
+LEFT
+MID SPAN
+RIGHT
+
+Extract exactly as written:
+- ALL
+- REST
+- 13
+- 10
+
+If ALL appears once for that beam → all three = ALL.
+
+Assign correctly to:
+nos.left
+nos.mid_span
+nos.right
+
+========================================================
 SIZE RULES
-=========================
+========================================================
 
-1. Beam size is written below beam_id like:
-   CB1a (300x600)
-2. Extract width and depth from that.
-3. Remove brackets.
-4. Length is null unless explicitly written.
+Beam size is written below beam_id like:
+CB1a (300x600)
 
-=========================
+Extract width and depth.
+Remove brackets.
+Length = null unless explicitly written.
+
+========================================================
 STIRRUPS RULES
-=========================
+========================================================
 
-1. STIRRUP DIA = LEGGED + DIA
-   Example:
-   LEGGED = 2
-   DIA = 8T
-   Output → 2L-8T
+1. STIRRUP DIA = LEGGED + "L-" + DIA
+
+Example:
+LEGGED = 2
+STRP.DIA = 8T
+Output → 2L-8T
 
 2. SPACING:
-   Extract only numeric spacing values.
-   Example:
-   100
-   150
+Extract numeric spacing from SPAC.c/c column.
+Convert:
+100 → 100 C/C
+150 → 150 C/C
 
-   Convert to:
-   100 C/C
-   150 C/C
+3. Do NOT include ALL or REST in spacing.
 
-3. Ignore:
-   ALL
-   REST
+4. Do NOT merge stirrups across beams.
 
-4. Do NOT merge stirrups between beams.
-
-=========================
-GENERAL RULES
-=========================
+========================================================
+GENERAL
+========================================================
 
 1. Return only valid JSON.
 2. Do NOT return explanations.
-3. Do NOT use markdown.
+3. Do NOT guess.
 4. If missing → null or empty array.
-5. Do NOT guess values.
-6. Extract only what belongs to each beam.
+5. Extract only what belongs strictly to each beam.
