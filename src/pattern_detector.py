@@ -1,203 +1,3 @@
-# import json
-# from pdf_to_images import convert_pdf_to_images
-# from vision_extractor import extract_from_image
-
-
-# def detect_pattern(pdf_path, temp_folder):
-
-#     image_paths = convert_pdf_to_images(pdf_path, temp_folder)
-
-#     if not image_paths:
-#         raise Exception("No image generated for detection.")
-
-#     first_image = image_paths[0]
-
-#     classification_prompt = """
-# You are an expert at identifying RCC beam schedule HEADER patterns.
-
-# IMPORTANT:
-# You must look ONLY at the HEADER structure.
-# Ignore all reinforcement values.
-# Ignore numbers.
-# Ignore row content.
-# Focus ONLY on column names.
-
-# There are EXACTLY 8 patterns.
-# Return ONLY one number from 1 to 8.
-# No explanation.
-# No extra text.
-# Only the number.
-
-# ========================================================
-# PATTERN 1
-# ========================================================
-# Header contains:
-# - BEAM
-# - SIZE (WIDTH, DEPTH)
-# - TOP REINFORCEMENT (LEFT, MID SPAN, RIGHT)
-# - BOTTOM REINFORCEMENT (LEFT, MID SPAN, RIGHT)
-# - STIRRUPS 9 (LEFT, MID SPAN, RIGHT)
-
-# Simple table structure.
-# No Bottom (Curtail).
-# No Extra Over Support columns.
-
-# ========================================================
-# PATTERN 2
-# ========================================================
-# Header contains:
-# - BEAM MARKED
-# - SIZE (B x D/d)   ← MUST contain "/d"
-# - Bottom (Straight)
-# - Bottom (Curtail)
-# - Top (Straight)
-# - Ex. Top (Straight)
-# - Top (Extra Over Support) Left
-# - Top (Extra Over Support) Right
-# - Stirrups (Upto L/4)
-# - Stirrups (Rest)
-
-# CRITICAL IDENTIFIER:
-# SIZE column contains "/d"
-
-# If "/d" exists in size → RETURN 2
-
-# ========================================================
-# PATTERN 3
-# ========================================================
-# Header contains:
-# - Beam Marked
-# - Size (B x D)     ← MUST NOT contain "/d"
-# - Bottom (Straight)
-# - Bottom (Curtail)
-# - Top (Straight)
-# - Top (Extra Over Support - Left)
-# - Top (Extra Over Support - Right)
-# - Stirrups (Upto L/4)
-# - Stirrups (Rest)
-
-# CRITICAL IDENTIFIER:
-# SIZE column does NOT contain "/d"
-
-# If NO "/d" and above header exists → RETURN 3
-
-# ========================================================
-# PATTERN 4
-# ========================================================
-# Header contains:
-# - BEAM
-# - WIDTH
-# - DEPTH
-# - CLEAR SPAN (L)
-# - A
-# - B
-# - C
-# - D1(mm)
-# - G
-# - E
-# - D2(mm)
-# - S1
-
-# Unique identifiers:
-# Columns A, B, C
-# Columns G, E
-# Columns D1(mm), D2(mm)
-# Column S1
-
-# ========================================================
-# PATTERN 5
-# ========================================================
-# Header contains:
-# - BEAM
-# - ELEVATION
-# - TYPE
-# - SIZE - WIDTH (W)
-# - SIZE - DEPTH (D)
-# - CLEAR SPAN (L)
-# - TOP REINF. - A
-# - BOTTOM REINF. - B
-# - STIRRUPS
-
-# Special identifier:
-# Multiple beam IDs stacked vertically inside SAME beam cell.
-
-# ========================================================
-# PATTERN 6
-# ========================================================
-# Header contains:
-# - BEAM NO
-# - B
-# - D
-
-# BOTTOM REINFORCEMENT:
-#     - LEFT SUPPORT (Layer 1)
-#     - MID SPAN (Layer 1)
-#     - MID SPAN (Layer 2)
-#     - RIGHT SUPPORT (Layer 1)
-
-# TOP REINFORCEMENT:
-#     - LEFT SUPPORT (Layer 1)
-#     - LEFT SUPPORT (Layer 2)
-#     - MID SPAN (Layer 1)
-#     - RIGHT SUPPORT (Layer 1)
-#     - RIGHT SUPPORT (Layer 2)
-
-# STIRRUPS:
-# - NO OF LEGS
-# - DIA
-# - LEFT SUPPORT SPACING
-# - MID SPACING
-# - RIGHT SUPPORT SPACING
-
-# ========================================================
-# PATTERN 7
-# ========================================================
-# Header contains:
-# - BEAM NO
-# - B
-# - D
-# - LAYER 1
-# - LAYER 2
-# - LEFT SUPPORT
-# - MID SPAN
-# - RIGHT SUPPORT
-# - NO OF LEGS
-# - DIA
-
-# Layered support type reinforcement layout.
-
-# ========================================================
-# PATTERN 8
-# ========================================================
-# NOT A TABLE.
-
-# Strip beam detail drawing.
-
-# Contains:
-# - Beam segments like CB1a, CB1b, CB1c
-# - Size written in brackets like (300x600)
-# - Reinforcement written ABOVE each beam segment
-# - No tabular grid header
-
-# ========================================================
-
-# FINAL DECISION PRIORITY:
-
-# 1) If you see "/d" inside size column → RETURN 2
-# 2) If you see "B x D" and NO "/d" → RETURN 3
-# 3) Otherwise match full header structure carefully.
-
-# Return ONLY the number.
-# """
-
-#     result = extract_from_image(first_image, classification_prompt)
-#     result = result.strip()
-
-#     if not result.isdigit():
-#         raise Exception(f"Pattern detection failed. Model returned: {result}")
-
-#     return int(result)
-
 import json
 from pdf_to_images import convert_pdf_to_images
 from vision_extractor import extract_from_image
@@ -229,18 +29,25 @@ No extra text.
 Only the number.
 
 ========================================================
-PATTERN 1
+PATTERN 1 (STRICT)
 ========================================================
-Header contains:
-- BEAM NUMBERS
-- SIZE (WIDTH, DEPTH) - WIDTH(W) and BREADTH(B) are same.
-- BOTTOM REINFORCEMENT (LEFT, MID SPAN, RIGHT)
-- TOP REINFORCEMENT (LEFT, MID SPAN, RIGHT)
-- SHEAR STIRRUPS (LEFT, MID SPAN, RIGHT)
 
-Simple table structure.
-No Bottom (Curtail).
-No Extra Over Support columns.
+Return 1 ONLY if:
+
+- Simple table with:
+  - BEAM NUMBERS
+  - SIZE (WIDTH, DEPTH)
+  - BOTTOM REINFORCEMENT (LEFT, MID, RIGHT)
+  - TOP REINFORCEMENT (LEFT, MID, RIGHT)
+  - SHEAR STIRRUPS (LEFT, MID, RIGHT)
+
+AND MUST NOT contain:
+
+- A, B, C, D1(mm), D2(mm)
+- E, G
+- Any labeled reinforcement like "TOP REINF A", "BOTTOM REINF B"
+
+If any structured reinforcement labels (A/B/C/etc.) exist → DO NOT RETURN 1
 
 ========================================================
 PATTERN 2
@@ -260,7 +67,20 @@ Header contains:
 CRITICAL IDENTIFIER:
 SIZE column contains "/d"
 
-If "/d" exists in size → RETURN 2
+CRITICAL IDENTIFIER (STRICT):
+
+Return 2 ONLY if:
+
+- The SIZE column header explicitly contains "/d"
+- Example: "B x D/d"
+
+STRICT CONDITIONS:
+- "/d" must be clearly visible inside the SIZE HEADER
+- It must NOT be inferred
+- It must NOT come from row values
+- It must NOT come from OCR noise
+
+If "/d" is not clearly visible in header → DO NOT RETURN 2
 
 ========================================================
 PATTERN 3
@@ -281,67 +101,56 @@ SIZE column does NOT contain "/d"
 
 If NO "/d" and above header exists → RETURN 3
 
+CRITICAL IDENTIFIER:
+
+Return 3 ONLY if:
+
+- Size is "B x D"
+- AND NO "/d" is present in header
+- AND structure matches:
+  Bottom (Straight)
+  Bottom (Curtail)
+  Top (Straight)
+  Top (Extra Over Support - Left)
+  Top (Extra Over Support - Right)
+
 ========================================================
 PATTERN 4
 ========================================================
-Header MUST contain ALL of these:
+STRICT RULE:
 
-- BEAM
-- ELEVATION
-- TYPE
-- SIZE (WIDTH W)
-- SIZE (DEPTH D)
-- CLEAR SPAN (L)
+Return 4 ONLY if ALL of the following exist:
 
-TOP REINFORCEMENT must contain:
 - A
 - B
 - C
 - D1(mm)
-
-BOTTOM REINFORCEMENT must contain:
 - G
 - E
 - D2(mm)
 
-STIRRUPS must contain:
-- S1
+If ANY of these are missing → DO NOT RETURN 4
 
-If ANY of the above columns are missing → DO NOT RETURN 4
-
-Return 4 ONLY if ALL columns exist.
+If only A and B exist → it is Pattern 5 (NOT 4)
 
 ========================================================
 PATTERN 5
 ========================================================
-Header contains:
 
-- BEAM
-- ELEVATION
-- TYPE
-- SIZE (WIDTH W)
-- SIZE (DEPTH D)
-- CLEAR SPAN (L)
+Return 5 ONLY if:
 
-TOP REINF:
-- A
+- A exists
+- B exists
 
-BOTTOM REINF:
-- B
+AND NONE of the following exist:
 
-STIRRUPS:
-- S1
+- C
+- D1(mm)
+- D2(mm)
+- G
+- E
 
-IMPORTANT:
-Pattern 5 does NOT contain:
-C
-D1(mm)
-D2(mm)
-G
-E
-
-If only A and B exist (and NOT C/D1/D2/G/E)
-→ RETURN 5
+If any of these exist → it is NOT Pattern 5
 
 ========================================================
 PATTERN 6
@@ -409,6 +218,23 @@ STIRRUPS:
 - SIDE FACE REINFORCEMENT ON EACH FACE
 
 ========================================================
+PATTERN 7 (STRICT)
+========================================================
+
+Return 7 ONLY if a column header EXACTLY contains:
+
+"GRID ID"
+
+STRICT CONDITIONS:
+- Must be clearly visible as a COLUMN TITLE
+- Must NOT be inferred
+- Must NOT be guessed
+- Must NOT be part of row text
+
+If "GRID ID" is not clearly visible → DO NOT RETURN 7
+→ RETURN 6 instead
+
+========================================================
 PATTERN 6 vs PATTERN 7 (CRITICAL DISTINCTION)
 ========================================================
 
@@ -454,12 +280,123 @@ Contains:
 - No tabular grid header
 
 ========================================================
+PATTERN 9
+========================================================
+Header contains:
 
-FINAL DECISION PRIORITY:
 
-1) If you see "/d" inside size column → RETURN 2
-2) If you see "B x D" and NO "/d" → RETURN 3
-3) Otherwise match full header structure carefully.
+BEAM NOs.
+BEAM TOP LEVEL
+SIZE - B
+SIZE - D
+BOTTOM REINFORCEMENT
+@LEFT SUPPORT
+MID SPAN
+@RIGHT SUPPORT
+TOP REINFORCEMENT
+@LEFT SUPPORT
+MID SPAN
+@RIGHT SUPPORT
+SIDE FACE REINF. IN EACH FACE
+STIRRUPS
+LEFT SUP.
+DIA
+@C/C
+DIST
+CENTRE
+DIA
+@C/C
+RIGHT SUP.
+DIA
+@C/C
+DIST
+BEAM TYPE
+REMARKS
+
+CRITICAL IDENTIFIER:
+Presence of "BEAM TOP LEVEL" column is mandatory.
+If this exists → ALWAYS RETURN 9
+
+========================================================
+PATTERN 10
+========================================================
+CRITICAL IDENTIFIER:
+Very simple header with ONLY:
+- BEAM NO.
+- SIZE
+- LEVEL
+
+No reinforcement breakdown columns.
+
+If reinforcement columns are missing → RETURN 10
+
+========================================================
+PATTERN 11
+========================================================
+Header contains:
+
+BEAM NO.
+FLOOR
+GRADE
+RCC BEAM SIZE
+LVL.
+B
+D
+STEEL MEMBER SIZE
+b
+d
+tf
+tw
+EMBEDMENT LENGTH "Le"
+LEFT SUPPORT 
+RIGHT SUPPORT
+BOTTOM REINF.
+TOP REINF.
+SFR (E.F.)
+STIRRUPS
+EXTRA BOUNDARY REINF. (E.F.)
+REMARKS
+
+========================================================
+FINAL DECISION PRIORITY (VERY IMPORTANT)
+========================================================
+
+1) If header contains:
+   "BEAM TOP LEVEL"
+   → RETURN 9
+
+2) If header contains:
+   "LEVEL" AND "SIZE" AND only simple columns
+   → RETURN 10
+
+3) If header contains ONLY:
+   - A
+   - B
+   AND does NOT contain:
+   - C, D1, D2, E, G
+   → RETURN 5
+
+4) If you see "/d" inside size column
+   → RETURN 2
+
+5) Pattern 3 should be returned ONLY if:
+   - Bottom (Straight)
+   - Bottom (Curtail)
+   - Top (Straight)
+   - Top (Extra Over Support - Left)
+   - Top (Extra Over Support - Right)
+   AND
+   NO columns like:
+   - BEAM TOP LEVEL
+   - SIDE FACE REINF
+   - BEAM TYPE
+
+6) Pattern 1 should be returned ONLY if NO labeled reinforcement
+   (A/B/C/D1/D2/E/G) exists
+
+7) If unsure → DO NOT default to 1 or 3
+
+Match full header structure carefully.
 
 Return ONLY the number.
 """
