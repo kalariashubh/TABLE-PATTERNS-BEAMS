@@ -358,6 +358,33 @@ EXTRA BOUNDARY REINF. (E.F.)
 REMARKS
 
 ========================================================
+PATTERN 12
+========================================================
+Header contains:
+
+TYPE
+LINTEL LENGTH
+SIZE (BXD)
+TOP REIN.
+BOTT. REIN.
+RINGS
+
+If LINTEL LENGTH is present → RETURN 12
+
+========================================================
+PATTERN 13
+========================================================
+Header contains:
+
+TYPE
+SIZE (BXD)
+TOP REIN.
+BOTT. REIN.
+RINGS
+
+If LINTEL LENGTH is NOT present → RETURN 13
+
+========================================================
 FINAL DECISION PRIORITY (VERY IMPORTANT)
 ========================================================
 
